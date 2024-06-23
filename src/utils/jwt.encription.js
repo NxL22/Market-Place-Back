@@ -20,4 +20,5 @@ class EncriptionFunc {
     }
 }
 
+
 export default new EncriptionFunc();

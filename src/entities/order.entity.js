@@ -1,7 +1,9 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db.js';
 
+
 const OrderEntity = sequelize.define('Order', {
+
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,

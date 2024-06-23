@@ -10,8 +10,6 @@ async function bootstrap() {
     const PORT = process.env.PORT || 3000;
 
     try {
-        await transporter.verify();
-        console.log('Transporter verified successfully.');
         
         await sequelize.sync({ alter: true });
         console.log('Conexión a la base de datos establecida correctamente.');

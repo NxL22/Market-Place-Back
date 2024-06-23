@@ -2,9 +2,7 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.js';
 
 
-
-
-const AdminEntity = sequelize.define('Admin', {
+const ProductEntity = sequelize.define('Product', {
 
     id: {
         type: DataTypes.INTEGER,
@@ -17,25 +15,21 @@ const AdminEntity = sequelize.define('Admin', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    email: {
+    price: {
+        type: DataTypes.FLOAT,
+        allowNull: false
+    },
+    quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    description: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
         validate: {
             len: [1, 255]
         }
-    },
-    password: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    role: {
-        type: DataTypes.ENUM(...Object.values(UserRole)),
-
-        allowNull: false
     }
-
-
 });
 
-export default AdminEntity;
+export default ProductEntity;

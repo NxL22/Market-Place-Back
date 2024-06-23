@@ -1,8 +1,9 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.js';
 
-// Definición del modelo ProductEntity
-const ProductEntity = sequelize.define('Product', {
+
+const AdminEntity = sequelize.define('Admin', {
+
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -10,29 +11,22 @@ const ProductEntity = sequelize.define('Product', {
         allowNull: false,
         unique: true
     },
-    userId: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
     name: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    price: {
-        type: DataTypes.FLOAT,
-        allowNull: false
-    },
-    capacity: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    description: {
+    email: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
         validate: {
             len: [1, 255]
         }
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false
     }
 });
 
-export default ProductEntity;
+export default AdminEntity;
