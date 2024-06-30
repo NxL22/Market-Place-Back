@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import authService from '../services/auth.service.js';
+import { roles } from '../utils/enum/role-enum.js';
 
 
 const authRoutes = Router();
@@ -8,9 +9,13 @@ const authRoutes = Router();
 authRoutes.post('/login', async (req, res) => {
     try {
         const { email, password, role } = req.body;
+        console.log('Request Body:', req.body);
+        console.log('Roles:', roles);
+        console.log('Received Role:', role);
 
         // Validar que el rol sea uno de los permitidos
-        if (![role.USER, role.SELLER, role.ADMIN].includes(role)) {
+        if (![roles.USER, roles.SELLER, roles.ADMIN].includes(role)) {
+            console.log('Invalid Role Detected:', role);
             return res.status(400).send('Invalid role');
         }
 
