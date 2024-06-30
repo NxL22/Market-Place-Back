@@ -21,7 +21,13 @@ userRoutes.post('/create-user', async (req, res) => {
         const user = await userService.createUser(req.body);
         res.status(201).json(user);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        if (error.message === 'Invalid email format' || error.message === 'Name, password, and email are required') {
+            res.status(400).json({ message: error.message });
+        } else if (error.message === 'User already exists') {
+            res.status(409).json({ message: error.message });
+        } else {
+            res.status(500).json({ message: 'Internal server error' });
+        }
     }
 });
 

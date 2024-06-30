@@ -1,5 +1,7 @@
 import UserEntity from '../entities/user.entity.js'
 import { roles } from '../utils/enum/role-enum.js';
+import { validateEmail } from '../utils/validators.js';
+import bcrypt from 'bcrypt';
 
 
 class UserService {
@@ -14,10 +16,35 @@ class UserService {
     // Crear usuario
     async createUser(data) {
         try {
-            const user = await UserEntity.create({ data, role:roles.USER });
+            const { name, password, email } = data;
+
+            // Validate email
+            if (!validateEmail(email)) {
+                throw new Error('Invalid email format');
+            }
+
+            // Validate required fields
+            if (!name || !password || !email) {
+                throw new Error('Name, password, and email are required');
+            }
+
+            // Check if user already exists
+            const existingUser = await UserEntity.findOne({ where: { email } });
+            if (existingUser) {
+                throw new Error('User already exists');
+            }
+
+            // Hash password
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            // Create user
+            const user = await UserEntity.create({ ...data, password: hashedPassword, role: roles.USER });
+            console.log('User created:', user);
+
             return user;
         } catch (error) {
-            throw new Error('Error creating user: ' + error.message);
+            console.error('Error creating user:', error.message);
+            throw new Error(error.message);
         }
     }
 
@@ -46,6 +73,7 @@ class UserService {
         }
     }
 
+
     // Actualizar un usuario por ID
     async updateUser(id, data) {
         try {
@@ -59,6 +87,7 @@ class UserService {
             throw new Error('Error updating user: ' + error.message);
         }
     }
+
 
     // Eliminar un usuario por ID
     async deleteUser(id) {
