@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.js';
+import { roles } from '../utils/enum/role-enum.js';
 
 
 const AdminEntity = sequelize.define('Admin', {
@@ -11,10 +12,7 @@ const AdminEntity = sequelize.define('Admin', {
         allowNull: false,
         unique: true
     },
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
+
     email: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -25,7 +23,16 @@ const AdminEntity = sequelize.define('Admin', {
     },
     password: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        validate: {
+            len: [1, 255]
+        }
+    },
+    role: {
+        type: DataTypes.ENUM,
+        values: Object.values(roles),
+        allowNull: false,
+        defaultValue: roles.ADMIN
     }
 });
 

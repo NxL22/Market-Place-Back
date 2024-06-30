@@ -26,6 +26,7 @@ const UserEntity = sequelize.define('User', {
     password: {
         type: DataTypes.STRING,
         allowNull: false,
+        
     },
     role: {
         type: DataTypes.ENUM,

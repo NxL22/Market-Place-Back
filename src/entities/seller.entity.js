@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.js';
+import { roles } from '../utils/enum/role-enum.js';
 
 
 const SellerEntity = sequelize.define('Seller', {
@@ -43,7 +44,14 @@ const SellerEntity = sequelize.define('Seller', {
         type: DataTypes.BOOLEAN,
         allowNull: true,
         defaultValue: false
+    },
+    role: {
+        type: DataTypes.ENUM,
+        values: Object.values(roles),
+        allowNull: false,
+        defaultValue: roles.SELLER
     }
+ 
 }, {
     timestamps: true
 });
