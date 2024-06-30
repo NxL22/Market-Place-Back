@@ -1,6 +1,6 @@
 import { Router } from "express";
 import userService from "../services/user.service.js";
-
+import { authenticateJWT, authorizeRoles } from '../middlewares/middleware.js';
 
 const userRoutes = Router();
 
@@ -33,7 +33,7 @@ userRoutes.post('/create-user', async (req, res) => {
 
 
 // Obtener todos los usuarios
-userRoutes.get('/all-users', async (req, res) => {
+userRoutes.get('/all-users', authenticateJWT, authorizeRoles(['ADMIN']), async (req, res) => {
     try {
         const users = await userService.getAllUsers();
         res.json(users);
@@ -44,7 +44,7 @@ userRoutes.get('/all-users', async (req, res) => {
 
 
 // Obtener un usuario por ID
-userRoutes.get('/user-id/:id', async (req, res) => {
+userRoutes.get('/user-id/:id', authenticateJWT, authorizeRoles(['ADMIN']), async (req, res) => {
     try {
         const user = await userService.getUserById(req.params.id);
         res.json(user);
@@ -55,7 +55,7 @@ userRoutes.get('/user-id/:id', async (req, res) => {
 
 
 // Actualizar un usuario por ID
-userRoutes.put('/update-user/:id', async (req, res) => {
+userRoutes.put('/update-user/:id', authenticateJWT, authorizeRoles(['ADMIN']), async (req, res) => {
     try {
         const user = await userService.updateUser(req.params.id, req.body);
         res.json(user);
@@ -66,7 +66,7 @@ userRoutes.put('/update-user/:id', async (req, res) => {
 
 
 // Eliminar un usuario por ID
-userRoutes.delete('/delete-user/:id', async (req, res) => {
+userRoutes.delete('/delete-user/:id', authenticateJWT, authorizeRoles(['ADMIN']), async (req, res) => {
     try {
         const message = await userService.deleteUser(req.params.id);
         res.json(message);
