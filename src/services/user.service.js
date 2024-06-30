@@ -1,3 +1,5 @@
+import AdminEntity from '../entities/admin.entity.js';
+import SellerEntity from '../entities/seller.entity.js';
 import UserEntity from '../entities/user.entity.js'
 import { roles } from '../utils/enum/role-enum.js';
 import { validateEmail } from '../utils/validators.js';
@@ -13,40 +15,53 @@ class UserService {
     }
 
 
-    // Crear usuario
+    // Crear un nuevo usuario
     async createUser(data) {
         try {
             const { name, password, email } = data;
 
-            // Validate email
+            // Validar formato de email
             if (!validateEmail(email)) {
                 throw new Error('Invalid email format');
             }
 
-            // Validate required fields
+            // Validar campos requeridos
             if (!name || !password || !email) {
                 throw new Error('Name, password, and email are required');
             }
 
-            // Check if user already exists
+            // Verificar si el correo ya está en uso
             const existingUser = await UserEntity.findOne({ where: { email } });
-            if (existingUser) {
-                throw new Error('User already exists');
+            const existingSeller = await SellerEntity.findOne({ where: { email } });
+            const existingAdmin = await AdminEntity.findOne({ where: { email } });
+
+            if (existingUser || existingSeller || existingAdmin) {
+                throw new Error('Email already in use');
             }
 
-            // Hash password
+            // Hashear la contraseña
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            // Create user
-            const user = await UserEntity.create({ ...data, password: hashedPassword, role: roles.USER });
-            console.log('User created:', user);
+            // Crear usuario
+            const user = await UserEntity.create({
+                name,
+                email,
+                password: hashedPassword,
+                role: roles.USER
+            });
+
+            // Reemplazar la contraseña con un string vacío por seguridad
+            user.password = '';
+
+            console.log('User created:', user); // Log del usuario creado
 
             return user;
         } catch (error) {
-            console.error('Error creating user:', error.message);
-            throw new Error(error.message);
+            console.error('Error creating user:', error.message); // Log del error
+            throw new Error('Error creating user: ' + error.message);
         }
     }
+
 
 
     // Obtener todos los usuarios
