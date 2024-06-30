@@ -1,10 +1,13 @@
 import { Router } from "express";
 import sellerService from "../services/seller.service.js";
+import { authenticateJWT, authorizeRoles } from '../middlewares/middleware.js';
+
+
 
 const sellerRoutes = Router();
 
 // Crear un nuevo vendedor
-sellerRoutes.post('/create-seller', async (req, res) => {
+sellerRoutes.post('/create-seller', authenticateJWT, authorizeRoles(['SELLER', 'ADMIN']), async (req, res) => {
     try {
         const seller = await sellerService.createSeller(req.body);
         res.status(201).json(seller);
@@ -15,7 +18,7 @@ sellerRoutes.post('/create-seller', async (req, res) => {
 
 
 // Obtener todos los vendedores
-sellerRoutes.get('/all-sellers', async (req, res) => {
+sellerRoutes.get('/all-sellers', authenticateJWT, authorizeRoles(['SELLER', 'ADMIN']), async (req, res) => {
     try {
         const sellers = await sellerService.getAllSellers();
         res.json(sellers);
@@ -26,7 +29,7 @@ sellerRoutes.get('/all-sellers', async (req, res) => {
 
 
 // Obtener un vendedor por ID
-sellerRoutes.get('/seller-id/:id', async (req, res) => {
+sellerRoutes.get('/seller-id/:id', authenticateJWT, authorizeRoles(['SELLER', 'ADMIN']), async (req, res) => {
     try {
         const seller = await sellerService.getSellerById(req.params.id);
         res.json(seller);
@@ -37,7 +40,7 @@ sellerRoutes.get('/seller-id/:id', async (req, res) => {
 
 
 // Actualizar un vendedor por ID
-sellerRoutes.put('/update-seller/:id', async (req, res) => {
+sellerRoutes.put('/update-seller/:id', authenticateJWT, authorizeRoles(['SELLER', 'ADMIN']), async (req, res) => {
     try {
         const seller = await sellerService.updateSeller(req.params.id, req.body);
         res.json(seller);
@@ -48,7 +51,7 @@ sellerRoutes.put('/update-seller/:id', async (req, res) => {
 
 
 // Eliminar un vendedor por ID
-sellerRoutes.delete('/delete-seller/:id', async (req, res) => {
+sellerRoutes.delete('/delete-seller/:id', authenticateJWT, authorizeRoles(['SELLER', 'ADMIN']), async (req, res) => {
     try {
         const message = await sellerService.deleteSeller(req.params.id);
         res.json(message);

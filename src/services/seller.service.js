@@ -1,4 +1,6 @@
+import AdminEntity from '../entities/admin.entity.js';
 import SellerEntity from '../entities/seller.entity.js';
+import UserEntity from '../entities/user.entity.js'
 
 
 class SellerService {
@@ -6,9 +8,49 @@ class SellerService {
     // Crear un nuevo vendedor
     async createSeller(data) {
         try {
-            const seller = await SellerEntity.create(data);
+            const { name, password, email, storeName, storeDescription } = data;
+
+            // Validar formato de email
+            if (!validateEmail(email)) {
+                throw new Error('Invalid email format');
+            }
+
+            // Validar campos requeridos
+            if (!name || !password || !email || !storeName) {
+                throw new Error('Name, password, email, and storeName are required');
+            }
+
+            // Verificar si el correo ya está en uso
+            const existingUser = await UserEntity.findOne({ where: { email } });
+            const existingSeller = await SellerEntity.findOne({ where: { email } });
+            const existingAdmin = await AdminEntity.findOne({ where: { email } });
+
+            if (existingUser || existingSeller || existingAdmin) {
+                throw new Error('Email already in use');
+            }
+
+            // Hashear la contraseña
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            // Crear vendedor
+            const seller = await SellerEntity.create({
+                name,
+                email,
+                password: hashedPassword,
+                storeName,
+                storeDescription,
+                role: roles.SELLER,
+                isApproved: false // Puedes ajustar esto según tu lógica de negocio
+            });
+
+            // Reemplazar la contraseña con un string vacío por seguridad
+            seller.password = '';
+
+            console.log('Seller created:', seller); // Log del vendedor creado
+
             return seller;
         } catch (error) {
+            console.error('Error creating seller:', error.message); // Log del error
             throw new Error('Error creating seller: ' + error.message);
         }
     }
