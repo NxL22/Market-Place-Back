@@ -1,28 +1,30 @@
+import ImageEntity from '../entities/image.entity.js';
 import ProductEntity from '../entities/product.entity.js';
+import SellerEntity from '../entities/seller.entity.js';
+import imagesService from './images.service.js';
 
 
 class ProductService {
 
     // Crear un nuevo producto
-    async createProduct(data) {
+    async createProduct(data, sellerId, file) {
         try {
-            const { sellerId, name, price, quantity, description } = data;
+            const { name, price, quantity, description } = data;
 
             // Validar campos requeridos
-            if (!sellerId || !name || !price || !quantity || !description) {
-                throw new Error('Seller ID, name, price, quantity, and description are required');
+            if (!name || !price || !quantity || !description) {
+                throw new Error('Name, price, quantity, and description are required');
             }
 
-            // Verificar si el vendedor existe
-            const seller = await SellerEntity.findByPk(sellerId);
-            if (!seller) {
-                throw new Error('Seller not found');
-            }
+            const product = await ProductEntity.create({
+                name,
+                price,
+                quantity,
+                description,
+                sellerId,
+            });
 
-            // Crear producto
-            const product = await ProductEntity.create(data);
-
-            console.log('Product created:', product); // Log del producto creado
+            await imagesService.upload(file, product.id)
 
             return product;
         } catch (error) {
@@ -31,13 +33,16 @@ class ProductService {
         }
     }
 
+
     // Obtener todos los productos
     async getAllProducts() {
         try {
-            const products = await ProductEntity.findAll();
+            const products = await ProductEntity.findAll({
+                include: [ImageEntity], // Incluir imágenes asociadas
+            });
             return products;
         } catch (error) {
-            throw new Error('Error obteniendo products: ' + error.message);
+            throw new Error('Error obteniendo productos: ' + error.message);
         }
     }
 
@@ -45,28 +50,31 @@ class ProductService {
     // Obtener un producto por ID
     async getProductById(id) {
         try {
-            const product = await ProductEntity.findByPk(id);
+            const product = await ProductEntity.findByPk(id, {
+                include: [ImageEntity], // Incluir imagen asociada
+            });
             if (!product) {
                 throw new Error('Product not found');
             }
             return product;
         } catch (error) {
-            throw new Error('Error obteniendo product: ' + error.message);
+            throw new Error('Error obteniendo producto: ' + error.message);
         }
     }
 
-    async updateProduct(id, data) {
+    async updateProduct(id, data, sellerId) {
         try {
-            const product = await ProductEntity.findByPk(id);
+            const product = await ProductEntity.findOne({ where: { id, sellerId } });
             if (!product) {
                 throw new Error('Product not found');
             }
-            await product.update(data);
+            await product.update({ ...product, ...data });
             return product;
         } catch (error) {
-            throw new Error('Error updating product: ' + error.message);
+            throw new Error('Error actualizando producto: ' + error.message);
         }
     }
+
 
     async deleteProduct(id) {
         try {
@@ -77,10 +85,37 @@ class ProductService {
             await product.destroy();
             return { message: 'Product has been successfully deleted' };
         } catch (error) {
-            throw new Error('Error deleting product: ' + error.message);
+            throw new Error('Error eliminando producto: ' + error.message);
         }
     }
 
+    // Actualizar la imagen de un producto
+    async updateProductImage(productId, newImageUrl) {
+        try {
+            const product = await ProductEntity.findByPk(productId, {
+                include: [ImageEntity]
+            });
+
+            if (!product) {
+                throw new Error('Product not found');
+            }
+
+            if (product.Image) {
+                product.Image.url = newImageUrl;
+                await product.Image.save();
+            } else {
+                await ImageEntity.create({
+                    url: newImageUrl,
+                    productId: product.id
+                });
+            }
+
+            return { message: 'Product image updated successfully' };
+        } catch (error) {
+            console.error('Error actualizando imagen del producto:', error.message);
+            throw new Error('Error actualizando imagen del producto: ' + error.message);
+        }
+    }
 }
 
 export default new ProductService();

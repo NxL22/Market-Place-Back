@@ -12,7 +12,6 @@ class AdminService {
             // Verificar si ya existe un administrador
             const adminExists = await AdminEntity.findOne();
             if (adminExists) {
-                console.log('Admin already exists');
                 return adminExists;
             }
 
@@ -22,7 +21,6 @@ class AdminService {
             const existingAdmin = await AdminEntity.findOne({ where: { email: data.email } });
 
             if (existingUser || existingSeller || existingAdmin) {
-                console.log('Email already exists');
                 throw new Error('Email already in use');
             }
 
@@ -31,7 +29,7 @@ class AdminService {
 
             // Crear administrador
             const adminCreate = await AdminEntity.create({ email: data.email, password: hashedPassword });
-            console.log('Admin created:', adminCreate); // Logging created admin
+
 
             return adminCreate;
         } catch (error) {

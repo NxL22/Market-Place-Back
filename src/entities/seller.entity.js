@@ -2,13 +2,11 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.js';
 import { roles } from '../utils/enum/role-enum.js';
 
-
 const SellerEntity = sequelize.define('Seller', {
-
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-        autoIncrement: true,
         allowNull: false,
         unique: true
     },
@@ -28,6 +26,15 @@ const SellerEntity = sequelize.define('Seller', {
     password: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    verifyToken: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    isVerified: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     },
     storeName: {
         type: DataTypes.STRING,
@@ -51,7 +58,6 @@ const SellerEntity = sequelize.define('Seller', {
         allowNull: false,
         defaultValue: roles.SELLER
     }
- 
 }, {
     timestamps: true
 });

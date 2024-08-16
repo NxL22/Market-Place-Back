@@ -1,13 +1,14 @@
-import { DataTypes } from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
 import sequelize from '../config/db.js';
 import { roles } from '../utils/enum/role-enum.js';
 
+class UserEntity extends Model {}
 
-const UserEntity = sequelize.define('User', {
+UserEntity.init({
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-        autoIncrement: true,
         allowNull: false,
         unique: true,
     },
@@ -26,7 +27,15 @@ const UserEntity = sequelize.define('User', {
     password: {
         type: DataTypes.STRING,
         allowNull: false,
-        
+    },
+    verifyToken: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    isVerified: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     },
     role: {
         type: DataTypes.ENUM,
@@ -36,6 +45,8 @@ const UserEntity = sequelize.define('User', {
     }
 }, 
 {
+    sequelize,
+    modelName: 'User',
     timestamps: false // Esto deshabilita la creación automática de los campos createdAt y updatedAt
 });
 

@@ -4,6 +4,7 @@ import AdminEntity from '../entities/admin.entity.js';
 import UserEntity from '../entities/user.entity.js';
 import EncriptionFunc from '../utils/jwt.encription.js'
 import { roles } from '../utils/enum/role-enum.js';
+import SellerEntity from '../entities/seller.entity.js';
 
 
 dotenv.config();
@@ -17,25 +18,22 @@ class AuthService {
 
         if (!email || !password || !role) {
             throw new Error('Email, password, and role are required');
-        }
-
+        };
         try {
             let user;
 
             if (email === process.env.EMAIL_ADMIN) {
                 user = await AdminEntity.findOne({ where: { email } });
-                console.log('Admin found:', user);
                 if (!user || !await bcrypt.compare(password, user.password)) {
                     throw new Error('Invalid email or password');
                 }
             } else {
+
                 if (![roles.SELLER, roles.USER].includes(role)) {
                     throw new Error('Invalid role');
                 }
-
                 if (role === roles.SELLER) {
-                    user = await AdminEntity.findOne({ where: { email } });
-                    console.log('Seller found:', user);
+                    user = await SellerEntity.findOne({ where: { email } });
                     if (!user || !await bcrypt.compare(password, user.password)) {
                         throw new Error('Invalid email or password');
                     }
@@ -48,7 +46,7 @@ class AuthService {
                 }
             }
 
-            const token = EncriptionFunc.generateToken({ id: user.id, email: user.email, role });
+            const token = EncriptionFunc.generateToken(user);
             console.log('Generated Token:', token);
 
             // Clonamos y a ese objeto le asignamos password = ""

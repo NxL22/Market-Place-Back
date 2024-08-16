@@ -8,14 +8,16 @@ import productRoutes from "../routes/product.routes.js";
 import adminRoutes from "../routes/admin.routes.js";
 import sellerRoutes from "../routes/seller.routes.js";
 import authRoutes from "../routes/auth.routes.js";
-
+import imagesRoutes from "../routes/images.routes.js";
+import cartRoutes from "../routes/cart.routes.js";
+import orderRoutes from "../routes/order.routes.js";
 
 const expressApp = express();
 
 expressApp.use(cors({
     origin: ['*'],
     allowedHeaders: ['Content-Type', 'Authorization', 'reset', 'pos'],
-    methods: ['GET', 'PUT', 'POST', 'DELETE'],
+    methods: ['GET', 'PUT', 'POST', 'DELETE','PATCH'],
 }));
 
 expressApp.use(bodyParser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }));
@@ -30,6 +32,10 @@ expressApp.use('/product', productRoutes)
 expressApp.use('/admin', adminRoutes)
 expressApp.use('/seller', sellerRoutes)
 expressApp.use('/auth', authRoutes)
+expressApp.use('/profile', authRoutes)
+expressApp.use('/images', imagesRoutes)
+expressApp.use('/cart', cartRoutes)
+expressApp.use('/order', orderRoutes)
 
 expressApp.use((err, _req, res, _next) => {
 

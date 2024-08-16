@@ -1,18 +1,19 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../../config/db.js';
+import sequelize from '../config/db.js';
+
 
 
 const OrderEntity = sequelize.define('Order', {
 
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-        autoIncrement: true,
         allowNull: false,
         unique: true
     },
     userId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         references: {
             model: 'Users',
@@ -20,7 +21,7 @@ const OrderEntity = sequelize.define('Order', {
         }
     },
     totalAmount: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false
     },
     status: {
@@ -28,19 +29,6 @@ const OrderEntity = sequelize.define('Order', {
         allowNull: false,
         defaultValue: 'Pending'
     },
-    shippingAddress: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    paymentMethod: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    orderDate: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
-    }
 }, {
     timestamps: true
 });

@@ -6,13 +6,12 @@ import { roles } from '../utils/enum/role-enum.js';
 const AdminEntity = sequelize.define('Admin', {
 
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-        autoIncrement: true,
         allowNull: false,
-        unique: true
+        unique: true,
     },
-
     email: {
         type: DataTypes.STRING,
         allowNull: false,

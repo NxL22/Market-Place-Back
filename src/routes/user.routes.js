@@ -1,6 +1,7 @@
 import { Router } from "express";
 import userService from "../services/user.service.js";
 import { authenticateJWT, authorizeRoles } from '../middlewares/middleware.js';
+import { roles } from "../utils/enum/role-enum.js";
 
 const userRoutes = Router();
 
@@ -33,7 +34,7 @@ userRoutes.post('/create-user', async (req, res) => {
 
 
 // Obtener todos los usuarios
-userRoutes.get('/all-users', authenticateJWT, authorizeRoles(['ADMIN']), async (req, res) => {
+userRoutes.get('/all-users', authenticateJWT, authorizeRoles([roles.ADMIN, roles.USER]), async (req, res) => {
     try {
         const users = await userService.getAllUsers();
         res.json(users);
@@ -44,7 +45,7 @@ userRoutes.get('/all-users', authenticateJWT, authorizeRoles(['ADMIN']), async (
 
 
 // Obtener un usuario por ID
-userRoutes.get('/user-id/:id', authenticateJWT, authorizeRoles(['ADMIN']), async (req, res) => {
+userRoutes.get('/user-id/:id', authenticateJWT, authorizeRoles([roles.ADMIN, roles.USER]), async (req, res) => {
     try {
         const user = await userService.getUserById(req.params.id);
         res.json(user);
@@ -55,9 +56,9 @@ userRoutes.get('/user-id/:id', authenticateJWT, authorizeRoles(['ADMIN']), async
 
 
 // Actualizar un usuario por ID
-userRoutes.put('/update-user/:id', authenticateJWT, authorizeRoles(['ADMIN']), async (req, res) => {
+userRoutes.put('/update-user/:id', authenticateJWT, authorizeRoles([roles.USER]), async (req, res) => {
     try {
-        const user = await userService.updateUser(req.params.id, req.body);
+        const user = await userService.updateUser(req.user.id, req.body);
         res.json(user);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -66,7 +67,7 @@ userRoutes.put('/update-user/:id', authenticateJWT, authorizeRoles(['ADMIN']), a
 
 
 // Eliminar un usuario por ID
-userRoutes.delete('/delete-user/:id', authenticateJWT, authorizeRoles(['ADMIN']), async (req, res) => {
+userRoutes.delete('/delete-user/:id', authenticateJWT, authorizeRoles([ roles.ADMIN ]), async (req, res) => {
     try {
         const message = await userService.deleteUser(req.params.id);
         res.json(message);
@@ -76,7 +77,14 @@ userRoutes.delete('/delete-user/:id', authenticateJWT, authorizeRoles(['ADMIN'])
 });
 
 
-
-
+userRoutes.get('/verified', async (req, res) => {
+    try {
+        const { token, email } = req.query;
+        const result = await userService.verified({token, email});
+        return res.json(result)
+    }catch(error){
+        res.status(500).json({ message: error.message });
+    }
+});
 
 export default userRoutes;

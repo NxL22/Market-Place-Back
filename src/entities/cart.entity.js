@@ -1,43 +1,31 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../../config/db.js';
+import { Model, DataTypes } from 'sequelize';
+import sequelize from '../config/db.js';
 
+class CartEntity extends Model {}
 
-const CartEntity = sequelize.define('Cart', {
-
+CartEntity.init({
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-        autoIncrement: true,
         allowNull: false,
-        unique: true
+        unique: true,
     },
     userId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         references: {
             model: 'Users',
             key: 'id'
         }
     },
-    productId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'Products',
-            key: 'id'
-        }
-    },
-    quantity: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 1
-    },
-    price: {
+    totalAmount: {
         type: DataTypes.DECIMAL(10, 2), 
         allowNull: false
     }
 }, {
-    timestamps: true
+    sequelize,
+    modelName: 'Cart'
 });
 
 export default CartEntity;

@@ -1,13 +1,11 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.js';
 
-
 const ProductEntity = sequelize.define('Product', {
-
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID, 
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
-        autoIncrement: true,
         allowNull: false,
         unique: true
     },
@@ -16,7 +14,7 @@ const ProductEntity = sequelize.define('Product', {
         allowNull: false
     },
     price: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false
     },
     quantity: {
